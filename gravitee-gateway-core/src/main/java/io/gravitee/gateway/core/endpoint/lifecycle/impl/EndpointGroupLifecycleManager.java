@@ -73,7 +73,11 @@ public class EndpointGroupLifecycleManager extends AbstractLifecycleComponent<En
     @Override
     protected void doStart() throws Exception {
         // Wrap endpoints with an observable collection
-        ObservableSet<Endpoint> endpoints = new ObservableSet<>(group.getEndpoints());
+        Set<Endpoint> groupEndpoints = group.getEndpoints();
+        if (groupEndpoints == null) {
+            groupEndpoints = new HashSet<>();
+        }
+        ObservableSet<Endpoint> endpoints = new ObservableSet<>(groupEndpoints);
         endpoints.addListener(EndpointGroupLifecycleManager.this);
         group.setEndpoints(endpoints);
 
@@ -196,8 +200,12 @@ public class EndpointGroupLifecycleManager extends AbstractLifecycleComponent<En
         return endpoints;
     }
 
-    public LoadBalancedEndpointGroup getGroup() {
+    public LoadBalancedEndpointGroup getLBGroup() {
         return lbGroup;
+    }
+
+    public EndpointGroup getGroup() {
+        return group;
     }
 
     public void setEndpointFactory(EndpointFactory endpointFactory) {
